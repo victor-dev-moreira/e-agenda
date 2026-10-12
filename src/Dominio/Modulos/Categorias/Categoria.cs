@@ -18,14 +18,27 @@ public sealed class Categoria : EntidadeBase<Categoria>
         Titulo = entidadeAtualizada.Titulo;
     }
 
-    public override List<string> Validar()
+    public override List<ErroValidacao> Validar()
     {
-        List<string> erros = [];
+        List<ErroValidacao> erros = [];
 
-        if (string.IsNullOrWhiteSpace(Titulo) || Titulo.Length < 2 || Titulo.Length > 100)
-            erros.Add("O campo \"Titulo\" deve conter entre 2 e 100 caracteres!");
+        if (string.IsNullOrWhiteSpace(Titulo))
+        {
+            erros.Add(new ErroValidacao
+            {
+                Campo = nameof(Titulo),
+                Mensagem = "O campo \"Titulo\" deve ser preenchido!"
+            });
+        }
 
-
+        if (Titulo.Length < 2 || Titulo.Length > 100)
+        {
+            erros.Add(new ErroValidacao
+            {
+                Campo = nameof(Titulo),
+                Mensagem = "O campo \"Titulo\" deve conter entre 2 e 100 caracteres!"
+            });
+        }
         return erros;
     }
 }

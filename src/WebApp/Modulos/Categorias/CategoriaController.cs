@@ -25,6 +25,9 @@ public sealed class CategoriaController(ServicoCategoria servicoCategoria) : Con
     [HttpPost]
     public ActionResult Cadastrar(CadastrarCategoriaViewModel viewModel)
     {
+        CadastrarCategoriaDto dto = new(viewModel.Titulo ?? string.Empty);
+
+
         Result<Guid> resultado = servicoCategoria
             .Cadastrar(new CadastrarCategoriaDto(viewModel.Titulo));
 
@@ -32,7 +35,12 @@ public sealed class CategoriaController(ServicoCategoria servicoCategoria) : Con
         {
             string mensagemErro = resultado.Errors.Select(e => e.Message).First();
 
-            ModelState.AddModelError(string.Empty, mensagemErro);
+            foreach (var erro in resultado.Errors)
+            {
+                string campo = erro.Metadata["Campo"].ToString() ?? string.Empty;
+
+                ModelState.AddModelError(campo, erro.Message);
+            }
 
             return View(viewModel);
         }
@@ -64,7 +72,10 @@ public sealed class CategoriaController(ServicoCategoria servicoCategoria) : Con
         if (!ModelState.IsValid)
             return View(viewModel);
 
-        EditarCategoriaDto dto = new(viewModel.Id, viewModel.Titulo);
+        EditarCategoriaDto dto = new(
+            viewModel.Id,
+            viewModel.Titulo ?? string.Empty
+        );
 
         Result resultado = servicoCategoria.Editar(dto);
 
@@ -72,7 +83,12 @@ public sealed class CategoriaController(ServicoCategoria servicoCategoria) : Con
         {
             string mensagemErro = resultado.Errors.Select(e => e.Message).First();
 
-            ModelState.AddModelError(string.Empty, mensagemErro);
+            foreach (var erro in resultado.Errors)
+            {
+                string campo = erro.Metadata["Campo"].ToString() ?? string.Empty;
+
+                ModelState.AddModelError(campo, erro.Message);
+            }
 
             return View(viewModel);
         }

@@ -44,11 +44,9 @@ public sealed class RepositorioCategoriaEmOrm(EAgendaDbContext dbContext) : IRep
     {
         return dbContext.Categorias.Any(c =>
             c.Id != idIgnorado &&
-            c.Titulo.ToLower() == tituloCategoria.ToLower());
+            !string.IsNullOrWhiteSpace(tituloCategoria) &&
+            c.Titulo.ToLower() == tituloCategoria.ToLower()
+            );
     }
 
-    public bool ExistePorNome(string tituloCategoria, Guid? idIgnorado = null)
-    {
-        throw new NotImplementedException();
-    }
 }
