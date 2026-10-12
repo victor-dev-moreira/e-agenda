@@ -1,0 +1,22 @@
+using System.ComponentModel.DataAnnotations;
+
+namespace eAgenda.WebApp.Modulos.Categorias;
+
+public record CadastrarCategoriaViewModel(
+    [Required(ErrorMessage = "O campo \"Titulo\" deve ser preenchido!")]
+    [StringLength(100, MinimumLength = 2, ErrorMessage = "O campo \"Titulo\" deve conter entre 2 e 100 caracteres!")]
+    string Titulo
+);
+
+public record EditarCategoriaViewModel(
+    Guid Id,
+
+    [Required(ErrorMessage = "O campo \"Titulo\" deve ser preenchido!")]
+    [StringLength(100, MinimumLength = 2, ErrorMessage = "O campo \"Titulo\" deve conter entre 2 e 100 caracteres!")]
+    string Titulo
+);
+
+public record ExcluirCategoriaViewModel(
+    Guid Id,
+    string Titulo
+);
