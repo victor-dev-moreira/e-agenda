@@ -23,6 +23,34 @@ public sealed class ServicoCategoria(IRepositorioCategoria repositorioCategoria)
         return Result.Ok(categoria.Id);
     }
 
+    public Result Editar(EditarCategoriaDto dto)
+    {
+        Categoria categoriaAtualizada = new Categoria(dto.Titulo);
+
+        List<string> erros = categoriaAtualizada.Validar();
+
+        if (repositorioCategoria.ExisteCategoriaPorTitulo(categoriaAtualizada.Titulo, dto.Id))
+            erros.Add("Já existe uma categoria cadastrada com o título informado");
+
+
+        if (erros.Count > 0)
+            return Result.Fail(erros[0]);
+
+        repositorioCategoria.Editar(dto.Id, categoriaAtualizada);
+
+        return Result.Ok();
+    }
+
+    public Result<CategoriaDto> SelecionarPorId(Guid id)
+    {
+        Categoria? cateogoria = repositorioCategoria.SelecionarPorId(id);
+
+        if (cateogoria == null)
+            return Result.Fail("Categoria não encontrada.");
+
+        return Result.Ok(new CategoriaDto(cateogoria.Id, cateogoria.Titulo));
+    }
+
     public List<CategoriaDto> SelecionarTodos()
     {
         List<Categoria> categorias = repositorioCategoria.SelecionarTodos();
