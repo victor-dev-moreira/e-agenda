@@ -25,7 +25,15 @@ public sealed class RepositorioCategoriaEmOrm(EAgendaDbContext dbContext) : IRep
 
     public bool Excluir(Guid idSelecionado)
     {
-        throw new NotImplementedException();
+        Categoria? categoria = SelecionarPorId(idSelecionado);
+
+        if (categoria == null)
+            return false;
+
+        dbContext.Categorias.Remove(categoria);
+
+        dbContext.SaveChanges();
+        return true;
     }
     public Categoria? SelecionarPorId(Guid idSelecionado)
     {

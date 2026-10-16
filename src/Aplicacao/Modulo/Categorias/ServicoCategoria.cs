@@ -61,6 +61,16 @@ public sealed class ServicoCategoria(IRepositorioCategoria repositorioCategoria)
         return Result.Ok();
     }
 
+    public Result Excluir(Guid id)
+    {
+        bool conseguiuExcluir = repositorioCategoria.Excluir(id);
+
+        if (!conseguiuExcluir)
+            return Result.Fail("Não foi possível encontrar categoria informada!");
+
+        return Result.Ok();
+    }
+
     public Result<CategoriaDto> SelecionarPorId(Guid id)
     {
         Categoria? cateogoria = repositorioCategoria.SelecionarPorId(id);
