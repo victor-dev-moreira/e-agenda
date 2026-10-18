@@ -22,6 +22,21 @@ namespace eAgenda.Infraestrutura.Compartilhado.Orm.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("TBDespesasCategorias", b =>
+                {
+                    b.Property<Guid>("CategoriasId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<Guid>("DespesasId")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.HasKey("CategoriasId", "DespesasId");
+
+                    b.HasIndex("DespesasId");
+
+                    b.ToTable("TBDespesasCategorias");
+                });
+
             modelBuilder.Entity("eAgenda.Dominio.Modulos.Categorias.Categoria", b =>
                 {
                     b.Property<Guid>("Id")
@@ -38,6 +53,46 @@ namespace eAgenda.Infraestrutura.Compartilhado.Orm.Migrations
                         .IsUnique();
 
                     b.ToTable("TBCategorias", (string)null);
+                });
+
+            modelBuilder.Entity("eAgenda.Dominio.Modulos.Despesas.Despesa", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .HasColumnType("uniqueidentifier");
+
+                    b.Property<DateOnly>("DataOcorrencia")
+                        .HasColumnType("date");
+
+                    b.Property<string>("Descricao")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("FormaPagamento")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<decimal>("Valor")
+                        .HasColumnType("decimal(18, 2)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("TBDespesas", (string)null);
+                });
+
+            modelBuilder.Entity("TBDespesasCategorias", b =>
+                {
+                    b.HasOne("eAgenda.Dominio.Modulos.Categorias.Categoria", null)
+                        .WithMany()
+                        .HasForeignKey("CategoriasId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("eAgenda.Dominio.Modulos.Despesas.Despesa", null)
+                        .WithMany()
+                        .HasForeignKey("DespesasId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
                 });
 #pragma warning restore 612, 618
         }
