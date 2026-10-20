@@ -1,3 +1,4 @@
+using eAgenda.Dominio.Compartilhado;
 using eAgenda.Dominio.Modulos.Categorias;
 using eAgenda.Dominio.Modulos.Despesas;
 using FluentResults;
@@ -5,12 +6,50 @@ using FluentResults;
 namespace eAgenda.Aplicacao.Modulo.Despesas;
 
 public sealed class ServicoDespesa(
-    IRepositorioDespesa irepositorioDespesa,
-    IRepositorioCategoria irepositorioCategoria)
+    IRepositorioDespesa repositorioDespesa,
+    IRepositorioCategoria repositorioCategoria)
 {
     public Result<Guid> Cadastrar(CadastrarDespesaDto dto)
     {
-        return Result.Ok();
+        List<Guid> idsDistintos = dto.CategoriaIds
+            .Where(id => id != Guid.Empty)
+            .Distinct()
+            .ToList();
+
+        if (idsDistintos.Count == 0)
+        {
+            IError erro = new Error("Selecione ao menos uma categoria válida.")
+                .WithMetadata("Campo", nameof(dto.CategoriaIds));
+
+            return Result.Fail(erro);
+        }
+
+        List<Categoria> categoriasSelecionadas = repositorioCategoria.SelecionarTodos()
+            .Where(c => idsDistintos.Contains(c.Id))
+            .ToList();
+
+        Despesa despesa = new Despesa(
+            dto.Descricao,
+            dto.DataOcorrencia,
+            dto.Valor,
+            dto.FormaPagamento,
+            categoriasSelecionadas
+        );
+
+        List<ErroValidacao> erros = despesa.Validar();
+
+        if (erros.Count > 0)
+        {
+            List<Error> errosResultado = erros
+                .Select(e => new Error(e.Mensagem).WithMetadata("Campo", e.Campo))
+                .ToList();
+
+            return Result.Fail(errosResultado);
+        }
+
+        repositorioDespesa.Cadastrar(despesa);
+
+        return Result.Ok(despesa.Id);
     }
 
     public Result Editar(EditarDespesaDto dto)
@@ -31,6 +70,17 @@ public sealed class ServicoDespesa(
 
     public List<DespesaDto> SelecionarTodos()
     {
-        return new List<DespesaDto>();
+        List<DespesaDto> dtos = repositorioDespesa
+            .SelecionarTodos()
+            .Select(d => new DespesaDto(
+                d.Id,
+                d.Descricao,
+                d.DataOcorrencia,
+                d.Valor,
+                d.FormaPagamento,
+                d.Categorias.Select(c => new CategoriaDespesaDto(c.Id, c.Titulo)).ToList()
+            )).ToList();
+
+        return dtos;
     }
 }

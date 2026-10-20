@@ -15,6 +15,7 @@ public record CadastrarDespesaDto(
     string Descricao,
     DateOnly DataOcorrencia,
     decimal Valor,
+    FormaPagamento FormaPagamento,
     List<Guid> CategoriaIds
 );
 public record EditarDespesaDto(
