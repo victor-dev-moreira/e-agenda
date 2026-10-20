@@ -23,5 +23,6 @@ public record EditarDespesaDto(
     string Descricao,
     DateOnly DataOcorrencia,
     decimal Valor,
+    FormaPagamento FormaPagamento,
     List<Guid> CategoriaIds
 );
