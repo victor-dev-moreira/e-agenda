@@ -54,36 +54,101 @@ namespace eAgenda.WebApp.Modulos.Tarefas
         }
 
         [HttpGet]
-
-        public ActionResult Editar()
+        public ActionResult Editar(Guid id)
         {
-            return View();
+            Result<TarefaDto> resultado = servicoTarefa.SelecionarPorId(id);
+
+            if (resultado.IsFailed)
+            {
+                TempData["MensagemErro"] = resultado.Errors.First().Message;
+
+                return RedirectToAction(nameof(Listar));
+            }
+
+            TarefaDto dto = resultado.Value;
+
+            EditarTarefaViewModel viewModel = new(
+                id,
+                dto.Titulo,
+                dto.Prioridade
+            );
+
+            return View(viewModel);
         }
 
         [HttpPost]
-
         public ActionResult Editar(EditarTarefaViewModel viewModel)
         {
+            EditarTarefaDto dto = new(
+                viewModel.Id,
+                viewModel.Titulo,
+                viewModel.Prioridade
+         );
+
+            Result resultado = servicoTarefa.Editar(dto);
+
+            if (resultado.IsFailed)
+            {
+                if (resultado.Errors.Any(e => e.HasMetadataKey("Campo")))
+                {
+                    TempData["MensagemErro"] = resultado.Errors.First().Message;
+
+                    return RedirectToAction(nameof(Listar));
+                }
+
+                foreach (IError erro in resultado.Errors)
+                {
+                    string campo = erro.Metadata["Campo"].ToString() ?? string.Empty;
+
+                    ModelState.AddModelError(string.Empty, erro.Message);
+                }
+
+                return View(viewModel);
+            }
+
             return RedirectToAction(nameof(Listar));
         }
 
         [HttpGet]
 
-        public ActionResult Excluir()
+        public ActionResult Excluir(Guid id)
         {
-            return View();
+            Result<TarefaDto> resultado = servicoTarefa.SelecionarPorId(id);
+
+            if (resultado.IsFailed)
+            {
+                TempData["MensagemErro"] = resultado.Errors.First().Message;
+
+                return RedirectToAction(nameof(Listar));
+            }
+
+            TarefaDto dto = resultado.Value;
+
+            ExcluirTarefaViewModel viewModel = new(
+                 id,
+                 dto.Titulo,
+                 dto.Prioridade,
+                 dto.DataCriacao
+             );
+
+            return View(viewModel);
         }
 
         [HttpPost]
 
         public ActionResult Excluir(ExcluirTarefaViewModel viewModel)
         {
+            Result resultado = servicoTarefa.Excluir(viewModel.Id);
+
+            if (resultado.IsFailed)
+                TempData["MensagemErro"] = resultado.Errors.First().Message;
+
             return RedirectToAction(nameof(Listar));
         }
 
-        public TarefaDto SelecionarPorId(Guid id)
+        public Result<TarefaDto> SelecionarPorId(Guid id)
         {
-            return null;
+            return Result.Ok();
         }
 
         public List<TarefaDto> SelecionarTodas()

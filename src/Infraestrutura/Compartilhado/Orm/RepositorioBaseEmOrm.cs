@@ -24,7 +24,9 @@ public abstract class RepositorioBaseEmOrm<T>(EAgendaDbContext dbContext) where 
 
         entidadeSelecionada.Atualizar(entidadeAtualizada);
 
+        dbContext.SaveChanges();
         return true;
+
     }
 
     public bool Excluir(Guid idSelecionado)

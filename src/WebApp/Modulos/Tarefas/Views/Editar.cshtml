@@ -1,57 +1,30 @@
-@using Microsoft.Extensions.Options
-@using eAgenda.Dominio.Modulos.Categorias
 @{
     Layout = "_Layout";
-    ViewBag.Titulo = "Edição de Despesa";
+    ViewBag.Titulo = "Edisão de Tarefa";
 }
 
-@model EditarDespesaViewModel;
+@model EditarTarefaViewModel;
 
 <form class="card border-primary-subtle shadow-sm mx-auto p-4" style="max-width: 620px;" asp-action="Editar"
       asp-route-id="@Model.Id" method="post">
     <div class="mb-3">
-        <label asp-for="Descricao" class="form-label fw-semibold text-primary text-uppercase small">Descrição</label>
-        <input asp-for="Descricao" type="text" class="form-control">
-        <span asp-validation-for="Descricao" class="text-danger small fw-semibold"></span>
+        <label asp-for="Titulo" class="form-label fw-semibold text-primary text-uppercase small">Título</label>
+        <input asp-for="Titulo" type="text" class="form-control">
+        <span asp-validation-for="Titulo" class="text-danger small fw-semibold"></span>
     </div>
 
     <div class="mb-3">
-        <label asp-for="DataOcorrencia" class="form-label fw-semibold text-primary text-uppercase small">Data de
-            Ocorrência</label>
-            <input asp-for="DataOcorrencia" type="date" class="form-control">
-            <span asp-validation-for="DataOcorrencia" class="text-danger small fw-semibold"></span>
-        </div>
+        <label asp-for="Prioridade" class="form-label fw-semibold text-primary text-uppercase small">Prioridade</label>
+        <select asp-for="Prioridade" class="form-select">
+            <option value="Baixa">Baixa</option>
+            <option value="Normal">Normal</option>
+            <option value="Alta">Alta</option>
+        </select>
+        <span asp-validation-for="Prioridade" class="text-danger small fw-semibold"></span>
+    </div>
 
-        <div class="mb-3">
-            <label asp-for="FormaPagamento" class="form-label fw-semibold text-primary text-uppercase small">Forma de
-                pagamento</label>
-                <select asp-for="FormaPagamento" class="form-select">
-                    <option value="AVista">À Vista</option>
-                    <option value="Credito">Crédito</option>
-                    <option value="Debito">Débito</option>
-                </select>
-                <span asp-validation-for="Descricao" class="text-danger small fw-semibold"></span>
-            </div>
-
-            <label asp-for="Valor" class="form-label fw-semibold text-primary text-uppercase small"></label>
-            <input asp-for="Valor" type="Number" step="0.01" class="form-control">
-            <span asp-validation-for="Valor" class="text-danger small fw-semibold"></span>
-        </div>
-
-        <div class="mb-3">
-            <label asp-for="CategoriasIds"
-                   class="form-label fw-semibold text-primary text-uppercase small">Categorias</label>
-            <select asp-for="CategoriasIds" class="form-select" multiple size="5">
-                @foreach (CategoriaDespesaDto categoria in Model.CategoriasDisponiveis)
-                {
-                    <option value="@categoria.Id">@categoria.Titulo</option>
-                }
-            </select>
-            <span asp-validation-for="CategoriasIds" class="text-danger small fw-semibold"></span>
-        </div>
-
-        <div class="d-flex justify-content-end gap-2 mt-4">
-            <a class="btn btn-outline-primary rounded-pill px-4" asp-action="Listar">Voltar</a>
-            <button class="btn btn-primary rounded-pill px-4" type="submit">Confirmar</button>
-        </div>
-    </form>
+    <div class="d-flex justify-content-end gap-2 mt-4">
+        <a class="btn btn-outline-primary rounded-pill px-4" asp-action="Listar">Voltar</a>
+        <button class="btn btn-primary rounded-pill px-4" type="submit">Confirmar</button>
+    </div>
+</form>
