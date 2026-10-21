@@ -35,7 +35,7 @@ public class Tarefa : EntidadeBase<Tarefa>
             });
         }
 
-        if (Enum.IsDefined(Prioridade))
+        if (!Enum.IsDefined(Prioridade))
         {
             erros.Add(new ErroValidacao
             {
