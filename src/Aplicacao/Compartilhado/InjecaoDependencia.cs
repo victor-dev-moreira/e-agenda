@@ -1,6 +1,6 @@
-using eAgenda.Aplicacao.Modulo.Categorias;
-using eAgenda.Aplicacao.Modulo.Despesas;
-using eAgenda.Aplicacao.Modulo.Tarefas;
+using eAgenda.Aplicacao..Categorias;
+using eAgenda.Aplicacao..Despesas;
+using eAgenda.Aplicacao..Tarefas;
 using Microsoft.Extensions.DependencyInjection;
 namespace eAgenda.Aplicacao.Compartilhado;
 

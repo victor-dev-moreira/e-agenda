@@ -1,4 +1,4 @@
-namespace eAgenda.Aplicacao.Modulo.Categorias;
+namespace eAgenda.Aplicacao.Modulos.Categorias;
 
 // DTO = Data Transfer Objetct
 
