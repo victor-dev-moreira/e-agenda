@@ -58,11 +58,81 @@ public sealed class ServicoTarefa(IRepositorioTarefa repositorioTarefa)
         return Result.Ok();
     }
 
+    public Result AdicionarItem(AdicionarItemTarefaDto dto)
+    {
+        Tarefa? tarefa = repositorioTarefa.SelecionarPorId(dto.TarefaId);
+
+        if (tarefa == null)
+            return Result.Fail("Tarefa não encontrada!");
+
+        ItemTarefa novoItem = new(tarefa, dto.Titulo);
+
+        List<ErroValidacao> erros = novoItem.Validar();
+
+        if (erros.Count > 0)
+        {
+            List<Error> errosResultado = erros
+            .Select(e => new Error(e.Mensagem).WithMetadata("Campo", e.Campo)).ToList();
+
+            return Result.Fail(errosResultado);
+        }
+
+        tarefa.AdicionarItem(novoItem);
+
+        repositorioTarefa.Editar(tarefa.Id, tarefa);
+
+        return Result.Ok();
+    }
+
+    public Result AlterarConclusaoItem(AlterarConclusaoItemTarefaDto dto)
+    {
+        Tarefa? tarefa = repositorioTarefa.SelecionarPorId(dto.TarefaId);
+
+        if (tarefa == null)
+            return Result.Fail("Tarefa não encontrada!");
+
+        bool itemEncontrado = tarefa.AlterarConclusaoItem(dto.ItemId, dto.concluido);
+
+        if (!itemEncontrado)
+            return Result.Fail("Item de tarefa não encontrado!");
+
+        repositorioTarefa.Editar(tarefa.Id, tarefa);
+
+        return Result.Ok();
+    }
+
+    public Result RemoverItem(RemoverItemTarefaDto dto)
+    {
+        Tarefa? tarefa = repositorioTarefa.SelecionarPorId(dto.TarefaId);
+
+        if (tarefa == null)
+            return Result.Fail("Tarefa não encontrada!");
+
+        bool itemEncontrado = tarefa.RemoverItem(dto.ItemId);
+
+        if (!itemEncontrado)
+            return Result.Fail("Item de tarefa não encontrado!");
+
+        repositorioTarefa.Editar(tarefa.Id, tarefa);
+
+        return Result.Ok();
+    }
+
     public List<TarefaDto> SelecionarTodas()
     {
         return repositorioTarefa
         .SelecionarTodos()
-        .Select(t => new TarefaDto(t.Id, t.Titulo, t.Prioridade, t.DataCriacao))
+        .Select(t => new TarefaDto(
+            t.Id,
+            t.Titulo,
+            t.Prioridade,
+            t.DataCriacao,
+            t.DataConclusao,
+            t.PercentualConcluido,
+            t.Concluido,
+            t.Itens.Select(i => new ItemTarefaDto(i.Id, i.Titulo, i.Concluido))
+                .ToList())
+        )
         .ToList();
     }
 
@@ -77,9 +147,17 @@ public sealed class ServicoTarefa(IRepositorioTarefa repositorioTarefa)
             tarefa.Id,
             tarefa.Titulo,
             tarefa.Prioridade,
-            tarefa.DataCriacao
+            tarefa.DataCriacao,
+            tarefa.DataConclusao,
+            tarefa.PercentualConcluido,
+            tarefa.Concluido,
+            tarefa.Itens.Select(i => new ItemTarefaDto(i.Id, i.Titulo, i.Concluido))
+                .ToList()
+
         );
 
         return Result.Ok(dto);
     }
+
+
 }

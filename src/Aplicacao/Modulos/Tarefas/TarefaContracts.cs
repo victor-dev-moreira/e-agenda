@@ -5,7 +5,11 @@ public record TarefaDto(
     Guid Id,
     string Titulo,
     PrioridadeTarefa Prioridade,
-    DateOnly DataCriacao
+    DateOnly DataCriacao,
+    DateOnly? DataConslusao,
+    int PercenctualConcluido,
+    bool Concluido,
+    List<ItemTarefaDto> Itens
 );
 public record CadastrarTarefaDto(
     string Titulo,
@@ -16,4 +20,30 @@ public record EditarTarefaDto(
     Guid Id,
     string Titulo,
     PrioridadeTarefa Prioridade
+);
+
+public record AdicionarItemTarefaDto(
+    Guid TarefaId,
+    string Titulo
+);
+
+public record AlterarConclusaoItemTarefaDto(
+    Guid TarefaId,
+    Guid ItemId,
+    bool concluido
+);
+
+public record RemoverItemTarefaDto(
+    Guid TarefaId,
+    Guid ItemId
+);
+public record AdicionarItemTarefaView(
+    Guid Id,
+    string Titulo
+);
+
+public record ItemTarefaDto(
+    Guid Id,
+    string Titulo,
+    bool Concluido
 );
