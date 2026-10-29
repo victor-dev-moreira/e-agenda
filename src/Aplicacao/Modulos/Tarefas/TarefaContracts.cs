@@ -6,9 +6,9 @@ public record TarefaDto(
     string Titulo,
     PrioridadeTarefa Prioridade,
     DateOnly DataCriacao,
-    DateOnly? DataConslusao,
-    int PercenctualConcluido,
-    bool Concluido,
+    DateOnly? DataConclusao,
+    int PercentualConcluido,
+    bool Concluida,
     List<ItemTarefaDto> Itens
 );
 public record CadastrarTarefaDto(

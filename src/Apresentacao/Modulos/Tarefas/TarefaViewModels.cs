@@ -30,11 +30,12 @@ public record GerenciarItensTarefaViewModel(
     string Titulo,
     PrioridadeTarefa Prioridade,
     DateOnly DataCriacao,
-    DateOnly? DataConclusa,
-    int PercenctualConcluido,
-    bool Concluido,
+    DateOnly? DataConclusao,
+    int PercentualConcluido,
+    bool Concluida,
     List<ItemTarefaViewModel> Itens
 );
+
 
 [ValidateNever]
 public record AdicionarItemTarefaView(

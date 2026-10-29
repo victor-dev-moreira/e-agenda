@@ -147,8 +147,7 @@ namespace eAgenda.WebApp.Modulos.Tarefas
         }
 
         [HttpGet]
-
-        public ActionResult GerenciaItens(Guid tarefaId)
+        public ActionResult GerenciarItens(Guid tarefaId)
         {
             Result<TarefaDto> resultado = servicoTarefa.SelecionarPorId(tarefaId);
 
@@ -166,9 +165,9 @@ namespace eAgenda.WebApp.Modulos.Tarefas
                 dto.Titulo,
                 dto.Prioridade,
                 dto.DataCriacao,
-                dto.DataConslusao,
-                dto.PercenctualConcluido,
-                dto.Concluido,
+                dto.DataConclusao,
+                dto.PercentualConcluido,
+                dto.Concluida,
                 dto.Itens.Select(i => new ItemTarefaViewModel(
                     i.Id,
                     i.Titulo,
@@ -177,16 +176,6 @@ namespace eAgenda.WebApp.Modulos.Tarefas
             );
 
             return View(viewModel);
-        }
-
-        public Result<TarefaDto> SelecionarPorId(Guid id)
-        {
-            return Result.Ok();
-        }
-
-        public List<TarefaDto> SelecionarTodas()
-        {
-            return [];
         }
 
         [HttpPost]
@@ -200,7 +189,7 @@ namespace eAgenda.WebApp.Modulos.Tarefas
                 TempData["MensagemErro"] = resultado.Errors.First().Message;
 
 
-            return RedirectToAction(nameof(GerenciaItens), new { tarefaId = viewModel.TarefaId });
+            return RedirectToAction(nameof(GerenciarItens), new { tarefaId = viewModel.TarefaId });
         }
 
         [HttpPost]
@@ -218,7 +207,7 @@ namespace eAgenda.WebApp.Modulos.Tarefas
                 TempData["MensagemErro"] = resultado.Errors.First().Message;
 
 
-            return RedirectToAction(nameof(GerenciaItens), new { tarefaId });
+            return RedirectToAction(nameof(GerenciarItens), new { tarefaId });
 
         }
 
@@ -233,7 +222,7 @@ namespace eAgenda.WebApp.Modulos.Tarefas
             if (resultado.IsFailed)
                 TempData["MensagemErro"] = resultado.Errors.First().Message;
 
-            return RedirectToAction(nameof(GerenciaItens), new { tarefaId });
+            return RedirectToAction(nameof(GerenciarItens), new { tarefaId });
         }
     }
 }

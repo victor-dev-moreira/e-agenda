@@ -5,7 +5,7 @@
 
 @model GerenciarItensTarefaViewModel;
 
-@if (!string.IsNullOrWhiteSpace(TempData["MensagemErro"]?.ToString()))
+@if (!string.IsNullOrWhiteSpace(TempData["ensagemErro"]?.ToString()))
 {
     <div class="alert alert-danger border-start border-danger border-4 rounded-3" role="alert">
         @TempData["MensagemErro"]!.ToString()
@@ -16,15 +16,15 @@
     <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
         <div>
             <h3 class="h5 mb-1">@Model.Titulo</h3>
-            <div class="text-secondary">@Model.Prioridade · @(Model.Concluido ? "Concluída" : "Pendente")</div>
+            <div class="text-secondary">@Model.Prioridade · @(Model.Concluida ? "Concluída" : "Pendente")</div>
         </div>
 
-        <span class="badge text-bg-primary rounded-pill">@Model.PercenctualConcluido</span>
+        <span class="badge text-bg-primary rounded-pill">@Model.PercentualConcluido</span>
     </div>
 
     <div class="progress" role="progressbar" aria-label="Percentual concluido"
-         aria-valuenow="@Model.PercenctualConcluido" aria-valuemin="0" aria-valuemax="100">
-        <div class="progress-bar" style="width: @Model.PercenctualConcluido%">@Model.PercenctualConcluido%</div>
+         aria-valuenow="@Model.PercentualConcluido" aria-valuemin="0" aria-valuemax="100">
+        <div class="progress-bar" style="width: @Model.PercentualConcluido%">@Model.PercentualConcluido%</div>
     </div>
 </div>
 
@@ -53,7 +53,7 @@
 
         <form class="d-flex justify-content-end mt-3" asp-action="AlterarConclusao" method="post">
             <input name="TarefaId" type="hidden" value="@Model.Id">
-            <input name="Concluida" type="hidden" value="@(Model.Concluido ? "false" : "true")">
+            <input name="Concluida" type="hidden" value="@(Model.Concluida ? "false" : "true")">
             <input name="RetornarParaItens" type="hidden" value="true">
             @* <button class="btn btn-outline-primary rounded-pill px-4" type="submit">@(Model.Concluida ? "Reabrir Tarefa" : "Concluir Tarefa")</button> *@
         </form>
@@ -77,7 +77,7 @@
                                 <input name="ItemId" type="hidden" value="@item.Id">
                                 <input name="Concluido" type="hidden" value="@(item.Concluido ? "false" : "true")">
                                 <button class="btn btn-outline-primary btn-sm rounded-pill px-3" type="submit">@(item.Concluido ?
-                                                                                                                                                                    "Reabrir" : "Concluir")</button>
+                                                                                                                                                                                                                                                                                "Reabrir" : "Concluir")</button>
                                 </form>
 
                                 <form asp-action="RemoverItem" method="post">
