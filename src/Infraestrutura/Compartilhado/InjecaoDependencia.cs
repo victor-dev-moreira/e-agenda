@@ -10,21 +10,24 @@ using eAgenda.Infraestrutura.Modulos.Contatos;
 using eAgenda.Infraestrutura.Modulos.Despesas;
 using eAgenda.Infraestrutura.Modulos.Tarefas;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Configuration;
 
 namespace eAgenda.Infraestrutura.Compartilhado;
 
 public static class InjecaoDependencia
 {
-    public static void AdicionadoCamadaInfraestrutura(this IServiceCollection services, IConfiguration configuration)
+    public static void AdicionarCamadaInfraestrutura(
+        this IServiceCollection services,
+        IConfiguration configuration
+    )
     {
         services.AddDbContext<EAgendaDbContext>(options =>
         {
             string? connectionString = configuration.GetConnectionString("SqlServer");
 
             if (string.IsNullOrWhiteSpace(connectionString))
-                throw new InvalidOperationException("A connectionStrings:SqlServer não foi configurada.");
+                throw new InvalidOperationException("A ConnectionStrings:SqlServer não foi configurada.");
 
             options.UseSqlServer(connectionString, cfg => cfg.EnableRetryOnFailure(3));
         });

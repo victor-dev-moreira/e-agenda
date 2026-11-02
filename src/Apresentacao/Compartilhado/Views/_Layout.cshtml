@@ -25,12 +25,28 @@
 
             <div class="collapse navbar-collapse" id="menuPrincipal">
                 <div class="navbar-nav ms-auto">
-                    <a class="nav-link" asp-controller="Home" asp-action="Index">Início</a>
-                    <a class="nav-link" asp-controller="Categoria" asp-action="Listar">Categorias</a>
-                    <a class="nav-link" asp-controller="Despesa" asp-action="Listar">Despesas</a>
-                    <a class="nav-link" asp-controller="Tarefa" asp-action="Listar">Tarefas</a>
-                    <a class="nav-link" asp-controller="Contato" asp-action="Listar">Contatos</a>
-                    <a class="nav-link" asp-controller="Compromisso" asp-action="Listar">Compromissos</a>
+
+                    @if(User.Identity?.IsAuthenticated == true)
+                        {
+                            <a class="nav-link" asp-controller="Home" asp-action="Index">Início</a>
+                            <a class="nav-link" asp-controller="Categoria" asp-action="Listar">Categorias</a>
+                            <a class="nav-link" asp-controller="Despesa" asp-action="Listar">Despesas</a>
+                            <a class="nav-link" asp-controller="Tarefa" asp-action="Listar">Tarefas</a>
+                            <a class="nav-link" asp-controller="Contato" asp-action="Listar">Contatos</a>
+                            <a class="nav-link" asp-controller="Compromisso" asp-action="Listar">Compromissos</a>
+
+                            <span class="nav-link">@User.Identity.Name</span>
+                            <form asp-controller="Autenticacao" asp-action="Logout" method="post">
+                                <button class="btn btn-link nav-link" type="submit">Sair</button>
+                            </form>
+                        }
+                        else
+                        {
+                            <a class="nav-link" asp-controller="Autenticacao" asp-action="Login">Entrar</a>
+                            <a class="nav-link" asp-controller="Autenticacao" asp-action="Cadastro">Criar conta</a>
+                        }
+
+
                 </div>
             </div>
         </div>

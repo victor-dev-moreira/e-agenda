@@ -1,0 +1,25 @@
+@{
+    Layout = "_Layout";
+    ViewBag.Titulo = "Criar conta de usúario";
+}
+
+@model CadastroUsuarioViewModel;
+
+<form class="card p-4 mx-auto" style="max-width: 480px" asp-controller="Autenticacao" asp-action="Cadastro"
+      method="post">
+
+    <div class="text-danger" asp-validation-summary="All"></div>
+
+    <label asp-for="Email" class="form-label">E-mail</label>
+    <input class="form-control mb-3" asp-for="Email" autocomplete="email">
+
+    <label asp-for="Senha" class="form-label">Senha</label>
+    <input class="form-control mb-3" asp-for="Senha" type="password" autocomplete="new-password">
+
+    <label asp-for="ConfirmarSenha" class="form-label">Senha</label>
+    <input class="form-control mb-3" asp-for="ConfirmarSenha" type="password" autocomplete="new-password">
+
+
+    <button class="btn btn-primary" type="submit">Cadastrar</button>
+    <a class="mt-3" asp-controller="Autenticacao" asp-action="Login">Já tenho uma conta</a>
+</form>
