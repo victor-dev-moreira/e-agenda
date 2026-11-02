@@ -53,7 +53,11 @@ public class Contato : EntidadeBase<Contato>
     }
     public override void Atualizar(Contato entidadeAtualizada)
     {
-        throw new NotImplementedException();
+        Nome = entidadeAtualizada.Nome;
+        Email = entidadeAtualizada.Email;
+        Telefone = entidadeAtualizada.Telefone;
+        Cargo = entidadeAtualizada.Cargo;
+        Empresa = entidadeAtualizada.Empresa;
     }
 
 }

@@ -6,9 +6,20 @@ namespace eAgenda.Infraestrutura.Modulos.Contatos;
 public sealed class RepositorioContatoEmOrm(EAgendaDbContext dbContext) :
     RepositorioBaseEmOrm<Contato>(dbContext), IRepositorioContato
 {
-    public bool ExisteCategoriaPorTitulo(string tituloCategoria, Guid? idIgnorado = null)
+    public bool ExisteContatoPorNome(string nome, Guid? idIgnorado = null)
     {
-        throw new NotImplementedException();
+        return registros.Any(
+            c => c.Id != idIgnorado &&
+            c.Nome.Trim() == nome.Trim()
+        );
+    }
+
+    public bool ExisteContatoPorEmail(string email, Guid? idIgnorado = null)
+    {
+        return registros.Any(
+            c => c.Id != idIgnorado &&
+            c.Email.Trim() == email.Trim()
+        );
     }
 
     public override List<Contato> SelecionarTodos()
