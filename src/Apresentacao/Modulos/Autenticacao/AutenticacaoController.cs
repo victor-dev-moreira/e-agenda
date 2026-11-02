@@ -98,6 +98,7 @@ public class AutenticacaoController(
     }
 
     [HttpPost]
+    [Authorize]
     public async Task<ActionResult> Logout()
     {
         await signInManager.SignOutAsync();
