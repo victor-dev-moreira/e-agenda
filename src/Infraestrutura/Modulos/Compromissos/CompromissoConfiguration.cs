@@ -1,4 +1,5 @@
 using eAgenda.Dominio.Modulos.Compromissos;
+using eAgenda.Infraestrutura.Compartilhado.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -45,5 +46,10 @@ public sealed class CompromissoConfiguration : IEntityTypeConfiguration<Compromi
             .WithMany()
             .HasForeignKey("ContatoId")
             .OnDelete(DeleteBehavior.NoAction);
+
+        builder.HasOne<UsuarioIdentity>()
+            .WithMany()
+            .HasForeignKey(c => c.UsuarioId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

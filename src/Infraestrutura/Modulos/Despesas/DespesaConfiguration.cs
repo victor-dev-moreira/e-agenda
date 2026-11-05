@@ -1,5 +1,6 @@
 using System;
 using eAgenda.Dominio.Modulos.Despesas;
+using eAgenda.Infraestrutura.Compartilhado.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
 
@@ -33,5 +34,10 @@ public class DespesaConfiguration : IEntityTypeConfiguration<Despesa>
         builder.HasMany(d => d.Categorias)
             .WithMany(c => c.Despesas)
             .UsingEntity("TBDespesasCategorias");
+
+        builder.HasOne<UsuarioIdentity>()
+            .WithMany()
+            .HasForeignKey(c => c.UsuarioId)
+            .OnDelete(DeleteBehavior.Restrict);
     }
 }

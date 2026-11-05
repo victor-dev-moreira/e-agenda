@@ -178,9 +178,12 @@ namespace eAgenda.Infraestrutura.Compartilhado.Orm.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("Titulo")
+                    b.HasIndex("UsuarioId", "Titulo")
                         .IsUnique();
 
                     b.ToTable("TBCategorias", (string)null);
@@ -220,9 +223,14 @@ namespace eAgenda.Infraestrutura.Compartilhado.Orm.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("ContatoId");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("TBCompromissos", (string)null);
                 });
@@ -255,12 +263,15 @@ namespace eAgenda.Infraestrutura.Compartilhado.Orm.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
-                    b.HasIndex("Email")
+                    b.HasIndex("UsuarioId", "Email")
                         .IsUnique();
 
-                    b.HasIndex("Telefone")
+                    b.HasIndex("UsuarioId", "Telefone")
                         .IsUnique();
 
                     b.ToTable("TBContatos", (string)null);
@@ -283,10 +294,15 @@ namespace eAgenda.Infraestrutura.Compartilhado.Orm.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.Property<decimal>("Valor")
                         .HasColumnType("decimal(18, 2)");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("TBDespesas", (string)null);
                 });
@@ -307,9 +323,14 @@ namespace eAgenda.Infraestrutura.Compartilhado.Orm.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
 
                     b.HasIndex("TarefaId");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("TBItensTarefa", (string)null);
                 });
@@ -340,7 +361,12 @@ namespace eAgenda.Infraestrutura.Compartilhado.Orm.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<Guid>("UsuarioId")
+                        .HasColumnType("uniqueidentifier");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("UsuarioId");
 
                     b.ToTable("TBTarefas", (string)null);
                 });
@@ -477,6 +503,15 @@ namespace eAgenda.Infraestrutura.Compartilhado.Orm.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("eAgenda.Dominio.Modulos.Categorias.Categoria", b =>
+                {
+                    b.HasOne("eAgenda.Infraestrutura.Compartilhado.Identity.UsuarioIdentity", null)
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("eAgenda.Dominio.Modulos.Compromissos.Compromisso", b =>
                 {
                     b.HasOne("eAgenda.Dominio.Modulos.Contatos.Contato", "Contato")
@@ -484,7 +519,31 @@ namespace eAgenda.Infraestrutura.Compartilhado.Orm.Migrations
                         .HasForeignKey("ContatoId")
                         .OnDelete(DeleteBehavior.NoAction);
 
+                    b.HasOne("eAgenda.Infraestrutura.Compartilhado.Identity.UsuarioIdentity", null)
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Contato");
+                });
+
+            modelBuilder.Entity("eAgenda.Dominio.Modulos.Contatos.Contato", b =>
+                {
+                    b.HasOne("eAgenda.Infraestrutura.Compartilhado.Identity.UsuarioIdentity", null)
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+                });
+
+            modelBuilder.Entity("eAgenda.Dominio.Modulos.Despesas.Despesa", b =>
+                {
+                    b.HasOne("eAgenda.Infraestrutura.Compartilhado.Identity.UsuarioIdentity", null)
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("eAgenda.Dominio.Modulos.Tarefas.ItemTarefa", b =>
@@ -495,7 +554,22 @@ namespace eAgenda.Infraestrutura.Compartilhado.Orm.Migrations
                         .OnDelete(DeleteBehavior.ClientCascade)
                         .IsRequired();
 
+                    b.HasOne("eAgenda.Infraestrutura.Compartilhado.Identity.UsuarioIdentity", null)
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
                     b.Navigation("Tarefa");
+                });
+
+            modelBuilder.Entity("eAgenda.Dominio.Modulos.Tarefas.Tarefa", b =>
+                {
+                    b.HasOne("eAgenda.Infraestrutura.Compartilhado.Identity.UsuarioIdentity", null)
+                        .WithMany()
+                        .HasForeignKey("UsuarioId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
                 });
 
             modelBuilder.Entity("eAgenda.Dominio.Modulos.Tarefas.Tarefa", b =>
