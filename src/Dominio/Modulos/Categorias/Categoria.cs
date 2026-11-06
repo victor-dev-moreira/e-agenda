@@ -10,15 +10,14 @@ public sealed class Categoria : EntidadeBase<Categoria>
 
     public List<Despesa> Despesas { get; set; } = [];
 
+
     public Categoria() { }
 
-    public Categoria(string titulo) : this()
+
+    public Categoria(Guid usuarioId, string titulo) : this()
     {
+        UsuarioId = usuarioId;
         Titulo = titulo;
-    }
-    public override void Atualizar(Categoria entidadeAtualizada)
-    {
-        Titulo = entidadeAtualizada.Titulo;
     }
 
     public override List<ErroValidacao> Validar()
@@ -43,5 +42,10 @@ public sealed class Categoria : EntidadeBase<Categoria>
             });
         }
         return erros;
+    }
+
+    public override void Atualizar(Categoria entidadeAtualizada)
+    {
+        Titulo = entidadeAtualizada.Titulo;
     }
 }

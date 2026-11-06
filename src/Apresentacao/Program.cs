@@ -1,7 +1,9 @@
 using eAgenda.Aplicacao.Compartilhado;
+using eAgenda.Dominio.Compartilhado;
 using eAgenda.Infraestrutura.Compartilhado;
 using eAgenda.Infraestrutura.Compartilhado.Identity;
 using eAgenda.Infraestrutura.Compartilhado.Orm;
+using eAgenda.WebApp.Modulos.Autenticacao;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -50,6 +52,9 @@ builder.Services.AddAuthorization(options =>
     options.FallbackPolicy = new AuthorizationPolicyBuilder()
         .RequireAuthenticatedUser().Build();
 });
+
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddScoped<IProvedorUsuarioAtual, ProvedorUsuarioAtualHttp>();
 
 var app = builder.Build();
 

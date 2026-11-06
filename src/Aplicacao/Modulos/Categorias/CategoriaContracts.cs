@@ -7,6 +7,7 @@ public record CategoriaDto(
     string Titulo
 );
 public record CadastrarCategoriaDto(
+    Guid UsuarioId,
     string Titulo
 );
 

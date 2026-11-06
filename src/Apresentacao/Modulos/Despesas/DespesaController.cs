@@ -25,7 +25,7 @@ public sealed class DespesaController(
     public ActionResult Cadastrar()
     {
         List<CategoriaDespesaDto> categoriasDtos = servicoCategoria
-            .SelecionarTodos()
+            .SelecionarTodos(Guid.Empty)
             .Select(c => new CategoriaDespesaDto(c.Id, c.Titulo))
             .ToList();
 
@@ -64,7 +64,7 @@ public sealed class DespesaController(
             }
 
             List<CategoriaDespesaDto> categoriasDtos = servicoCategoria
-                .SelecionarTodos()
+                .SelecionarTodos(Guid.Empty)
                 .Select(c => new CategoriaDespesaDto(c.Id, c.Titulo))
                 .ToList();
 
@@ -99,7 +99,7 @@ public sealed class DespesaController(
         );
 
         List<CategoriaDespesaDto> categoriasDtos = servicoCategoria
-               .SelecionarTodos()
+               .SelecionarTodos(Guid.Empty)
                .Select(c => new CategoriaDespesaDto(c.Id, c.Titulo))
                .ToList();
 
@@ -138,7 +138,7 @@ public sealed class DespesaController(
             }
 
             List<CategoriaDespesaDto> categoriasDtos = servicoCategoria
-                .SelecionarTodos()
+                .SelecionarTodos(Guid.Empty)
                 .Select(c => new CategoriaDespesaDto(c.Id, c.Titulo))
                 .ToList();
 

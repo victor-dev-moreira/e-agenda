@@ -1,15 +1,19 @@
 using eAgenda.Aplicacao.Modulo.Categorias;
+using eAgenda.Dominio.Compartilhado;
 using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace eAgenda.WebApp.Modulos.Categorias;
 
-public sealed class CategoriaController(ServicoCategoria servicoCategoria) : Controller
+public sealed class CategoriaController(
+    ServicoCategoria servicoCategoria,
+    IProvedorUsuarioAtual usuarioAtual
+    ) : Controller
 {
     [HttpGet]
     public ActionResult Listar()
     {
-        List<CategoriaDto> categorias = servicoCategoria.SelecionarTodos();
+        List<CategoriaDto> categorias = servicoCategoria.SelecionarTodos(usuarioAtual.Id);
 
         return View(categorias);
     }
@@ -17,6 +21,7 @@ public sealed class CategoriaController(ServicoCategoria servicoCategoria) : Con
     [HttpGet]
     public ActionResult Cadastrar()
     {
+
         CadastrarCategoriaViewModel viewModel = new("");
 
         return View(viewModel);
@@ -25,11 +30,15 @@ public sealed class CategoriaController(ServicoCategoria servicoCategoria) : Con
     [HttpPost]
     public ActionResult Cadastrar(CadastrarCategoriaViewModel viewModel)
     {
-        CadastrarCategoriaDto dto = new(viewModel.Titulo ?? string.Empty);
+
+        CadastrarCategoriaDto dto = new(
+            usuarioAtual.Id,
+            viewModel.Titulo ?? string.Empty
+            );
 
 
         Result<Guid> resultado = servicoCategoria
-            .Cadastrar(new CadastrarCategoriaDto(viewModel.Titulo));
+            .Cadastrar(dto);
 
         if (resultado.IsFailed)
         {
@@ -51,7 +60,7 @@ public sealed class CategoriaController(ServicoCategoria servicoCategoria) : Con
     [HttpGet]
     public ActionResult Editar(Guid id)
     {
-        Result<CategoriaDto> resultado = servicoCategoria.SelecionarPorId(id);
+        Result<CategoriaDto> resultado = servicoCategoria.SelecionarPorId(id, usuarioAtual.Id);
 
         if (resultado.IsFailed)
             return RedirectToAction(nameof(Listar));
@@ -99,7 +108,7 @@ public sealed class CategoriaController(ServicoCategoria servicoCategoria) : Con
     [HttpGet]
     public ActionResult Excluir(Guid id)
     {
-        Result<CategoriaDto> resultado = servicoCategoria.SelecionarPorId(id);
+        Result<CategoriaDto> resultado = servicoCategoria.SelecionarPorId(id, usuarioAtual.Id);
 
         if (resultado.IsFailed)
             return RedirectToAction(nameof(Listar));
