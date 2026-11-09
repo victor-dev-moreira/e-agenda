@@ -13,7 +13,7 @@ public class Tarefa : EntidadeBase<Tarefa>
 
     public Tarefa() { }
 
-    public Tarefa(string titulo, PrioridadeTarefa prioridade)
+    public Tarefa(string titulo, PrioridadeTarefa prioridade) : this()
     {
         Titulo = titulo;
         Prioridade = prioridade;
