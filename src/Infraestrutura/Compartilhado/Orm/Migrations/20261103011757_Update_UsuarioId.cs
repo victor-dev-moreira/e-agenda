@@ -65,6 +65,44 @@ namespace eAgenda.Infraestrutura.Compartilhado.Orm.Migrations
                 nullable: false,
                 defaultValue: new Guid("00000000-0000-0000-0000-000000000000"));
 
+            // As tabelas já podem conter dados criados antes da autenticação por usuário.
+            // Cria um usuário técnico sem credenciais apenas quando necessário e associa
+            // os registros legados a um usuário existente antes de impor as FKs.
+            migrationBuilder.Sql("""
+                DECLARE @UsuarioLegadoId uniqueidentifier = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa';
+
+                IF NOT EXISTS (SELECT 1 FROM dbo.AspNetUsers)
+                   AND (
+                       EXISTS (SELECT 1 FROM dbo.TBCategorias)
+                       OR EXISTS (SELECT 1 FROM dbo.TBCompromissos)
+                       OR EXISTS (SELECT 1 FROM dbo.TBContatos)
+                       OR EXISTS (SELECT 1 FROM dbo.TBDespesas)
+                       OR EXISTS (SELECT 1 FROM dbo.TBItensTarefa)
+                       OR EXISTS (SELECT 1 FROM dbo.TBTarefas)
+                   )
+                BEGIN
+                    INSERT INTO dbo.AspNetUsers
+                        (Id, EmailConfirmed, PhoneNumberConfirmed, TwoFactorEnabled,
+                         LockoutEnabled, AccessFailedCount)
+                    VALUES
+                        (@UsuarioLegadoId, 0, 0, 0, 0, 0);
+                END;
+
+                IF EXISTS (SELECT 1 FROM dbo.AspNetUsers)
+                BEGIN
+                    SELECT TOP (1) @UsuarioLegadoId = Id
+                    FROM dbo.AspNetUsers
+                    ORDER BY CASE WHEN Id = 'aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa' THEN 0 ELSE 1 END, Id;
+
+                    UPDATE dbo.TBCategorias SET UsuarioId = @UsuarioLegadoId WHERE UsuarioId = '00000000-0000-0000-0000-000000000000';
+                    UPDATE dbo.TBCompromissos SET UsuarioId = @UsuarioLegadoId WHERE UsuarioId = '00000000-0000-0000-0000-000000000000';
+                    UPDATE dbo.TBContatos SET UsuarioId = @UsuarioLegadoId WHERE UsuarioId = '00000000-0000-0000-0000-000000000000';
+                    UPDATE dbo.TBDespesas SET UsuarioId = @UsuarioLegadoId WHERE UsuarioId = '00000000-0000-0000-0000-000000000000';
+                    UPDATE dbo.TBItensTarefa SET UsuarioId = @UsuarioLegadoId WHERE UsuarioId = '00000000-0000-0000-0000-000000000000';
+                    UPDATE dbo.TBTarefas SET UsuarioId = @UsuarioLegadoId WHERE UsuarioId = '00000000-0000-0000-0000-000000000000';
+                END;
+                """);
+
             migrationBuilder.CreateIndex(
                 name: "IX_TBTarefas_UsuarioId",
                 table: "TBTarefas",

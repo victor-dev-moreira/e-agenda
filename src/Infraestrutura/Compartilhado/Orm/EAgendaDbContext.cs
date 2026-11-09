@@ -1,3 +1,4 @@
+using eAgenda.Dominio.Compartilhado;
 using eAgenda.Dominio.Modulos.Categorias;
 using eAgenda.Dominio.Modulos.Compromissos;
 using eAgenda.Dominio.Modulos.Contatos;
@@ -15,8 +16,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace eAgenda.Infraestrutura.Compartilhado.Orm;
 
-public sealed class EAgendaDbContext(DbContextOptions<EAgendaDbContext> options) :
-    IdentityDbContext<UsuarioIdentity, IdentityRole<Guid>, Guid>(options)
+public sealed class EAgendaDbContext(
+    DbContextOptions<EAgendaDbContext> options,
+    IProvedorUsuarioAtual usuarioAtual
+) : IdentityDbContext<UsuarioIdentity, IdentityRole<Guid>, Guid>(options)
 {
     public DbSet<Categoria> Categorias => Set<Categoria>();
     public DbSet<Despesa> Despesas => Set<Despesa>();
@@ -35,6 +38,8 @@ public sealed class EAgendaDbContext(DbContextOptions<EAgendaDbContext> options)
         modelBuilder.ApplyConfiguration(new ItemTarefaConfiguration());
         modelBuilder.ApplyConfiguration(new ContatoConfiguration());
         modelBuilder.ApplyConfiguration(new CompromissoConfiguration());
+
+        modelBuilder.Entity<Categoria>().HasQueryFilter(c => c.UsuarioId == usuarioAtual.Id);
     }
 
 }
