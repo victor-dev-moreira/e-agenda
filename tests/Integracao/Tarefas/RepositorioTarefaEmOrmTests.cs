@@ -1,57 +1,19 @@
 ﻿using eAgenda.Dominio.Modulos.Tarefas;
-using eAgenda.Infraestrutura.Compartilhado.Identity;
-using eAgenda.Infraestrutura.Compartilhado.Orm;
 using eAgenda.Infraestrutura.Modulos.Tarefas;
-using eAgenda.Testes.Integracao.Compartilhado;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
 
-namespace eAgenda.Testes.Integracao;
+namespace eAgenda.Testes.Integracao.Tarefas;
 
 [TestClass]
-public sealed partial class RepositorioTarefaEmOrmTests
+public sealed partial class RepositorioTarefaEmOrmTests : RepositorioEmOrmTestsBase
 {
-    private static string? connectionString = null;
-    private Guid usuarioId = Guid.Empty;
-    private EAgendaDbContext dbContext = null!;
-    private RepositorioTarefaEmOrm repositorioTarefa = null!;
-
-    [ClassInitialize]
-    public static void InicializarClasse(TestContext testContext)
-    {
-        IConfiguration configuration = new ConfigurationBuilder()
-            .SetBasePath(AppContext.BaseDirectory)
-            .AddJsonFile("appsettings.json", optional: false)
-            .AddUserSecrets(typeof(RepositorioTarefaEmOrmTests).Assembly)
-            .Build();
-
-        connectionString = configuration.GetConnectionString("SqlServer");
-
-        if (string.IsNullOrWhiteSpace(connectionString))
-            throw new InvalidOperationException("A connectionStrings:SqlServer não foi configurada!");
-    }
-
-    [TestInitialize]
-    public void InicializarTeste()
-    {
-        usuarioId = Guid.CreateVersion7();
-        dbContext = CriarContexto(usuarioId);
-        repositorioTarefa = new RepositorioTarefaEmOrm(dbContext);
-
-        dbContext.Database.EnsureDeleted();
-        dbContext.Database.EnsureCreated();
-
-        CriarUsuario(dbContext, usuarioId);
-    }
 
     [TestMethod]
-
-    public void Cadastrar_DevePersistir_TarefaEItensNoBanoc()
+    public void Cadastrar_DevePersistir_TarefaEItensNoBanco()
     {
         // Arranjo
         Guid tarefaId = Guid.CreateVersion7();
 
-        Tarefa tarefa = new Tarefa("Preparar", PrioridadeTarefa.Alta)
+        Tarefa tarefa = new("Preparar", PrioridadeTarefa.Alta)
         {
             Id = tarefaId,
             UsuarioId = usuarioId,
@@ -60,6 +22,8 @@ public sealed partial class RepositorioTarefaEmOrmTests
 
         tarefa.AdicionarItem(new ItemTarefa(tarefa, "Revisar") { UsuarioId = usuarioId });
         tarefa.AdicionarItem(new ItemTarefa(tarefa, "Montagem") { UsuarioId = usuarioId, Concluido = true });
+
+        RepositorioTarefaEmOrm repositorioTarefa = new(dbContext);
 
         // Ação
         repositorioTarefa.Cadastrar(tarefa);
@@ -78,32 +42,92 @@ public sealed partial class RepositorioTarefaEmOrmTests
         CollectionAssert.AreEqual(
             new[] { "Montagem", "Revisar" },
             tarefaSelecionada.Itens.Select(i => i.Titulo).ToArray()
+
         );
-
     }
 
-    private static EAgendaDbContext CriarContexto(Guid usuarioId)
-    {
-        DbContextOptions<EAgendaDbContext> options = new DbContextOptionsBuilder<EAgendaDbContext>()
-            .UseSqlServer(connectionString)
-            .Options;
+    [TestMethod]
 
-        return new EAgendaDbContext(options, new ProvedorUsuarioAtualFake(usuarioId));
-    }
-
-    private static void CriarUsuario(EAgendaDbContext dbContext, Guid usuarioId)
+    public void Editar_DeveAtualizar_TarefaEItensNoBanco()
     {
-        dbContext.Users.Add(new UsuarioIdentity
+        // Arranjo
+        Guid tarefaId = Guid.CreateVersion7();
+
+        Tarefa tarefaOriginal = new("Preparar", PrioridadeTarefa.Alta)
         {
-            Id = usuarioId,
-            UserName = $"integracao-{usuarioId:N}",
-            NormalizedUserName = $"INTEGRACACAO-{usuarioId:N}",
-            Email = $"{usuarioId:N}@test.local",
-            NormalizedEmail = $"{usuarioId:N}@TEST.LOCAL",
-            EmailConfirmed = true,
-            SecurityStamp = Guid.NewGuid().ToString()
-        });
+            Id = tarefaId,
+            UsuarioId = usuarioId,
+            DataCriacao = new DateOnly(2026, 11, 09)
+        };
 
-        dbContext.SaveChanges();
+        tarefaOriginal.AdicionarItem(new ItemTarefa(tarefaOriginal, "Revisar") { UsuarioId = usuarioId });
+
+        RepositorioTarefaEmOrm repositorioTarefa = new(dbContext);
+
+        repositorioTarefa.Cadastrar(tarefaOriginal);
+        dbContext.ChangeTracker.Clear();
+
+        Tarefa tarefaEditada = new("Preparar Teste", PrioridadeTarefa.Normal)
+        {
+            Id = tarefaId,
+            UsuarioId = usuarioId,
+            DataCriacao = new DateOnly(2026, 11, 11)
+        };
+
+        tarefaEditada.AdicionarItem(new ItemTarefa(tarefaEditada, "Revisar Novo") { UsuarioId = usuarioId, Concluido = true });
+
+        // Ação
+        bool conseguiuEditar = repositorioTarefa.Editar(tarefaId, tarefaEditada);
+        dbContext.ChangeTracker.Clear();
+
+        Tarefa? tarefaSelecionada = repositorioTarefa.SelecionarPorId(tarefaId);
+
+        // Asserção
+
+        Assert.IsTrue(conseguiuEditar);
+        Assert.IsNotNull(tarefaSelecionada);
+        Assert.AreEqual("Preparar Teste", tarefaSelecionada.Titulo);
+        Assert.AreEqual(PrioridadeTarefa.Normal, tarefaSelecionada.Prioridade);
+        Assert.AreEqual(new DateOnly(2026, 11, 11), tarefaSelecionada.DataCriacao);
+        Assert.HasCount(1, tarefaSelecionada.Itens);
+        Assert.IsTrue(tarefaSelecionada.Concluido);
+        Assert.IsNotNull(tarefaSelecionada.DataConclusao);
     }
+
+    [TestMethod]
+    public void Excluir_DeveApagar_TarefaEItensNoBanco()
+    {
+        // Arranjo
+        Guid tarefaId = Guid.CreateVersion7();
+
+        Tarefa tarefaOriginal = new("Preparar", PrioridadeTarefa.Alta)
+        {
+            Id = tarefaId,
+            UsuarioId = usuarioId,
+            DataCriacao = new DateOnly(2026, 11, 09)
+        };
+
+        tarefaOriginal.AdicionarItem(new ItemTarefa(tarefaOriginal, "Revisar") { UsuarioId = usuarioId });
+
+        RepositorioTarefaEmOrm repositorioTarefa = new(dbContext);
+
+        repositorioTarefa.Cadastrar(tarefaOriginal);
+        dbContext.ChangeTracker.Clear();
+
+        // Ação
+        bool conseguiuExcluir = repositorioTarefa.Excluir(tarefaId);
+        dbContext.ChangeTracker.Clear();
+
+        Tarefa? tarefaSelecionada = repositorioTarefa.SelecionarPorId(tarefaId);
+
+        int quantidadeItensTarefa = dbContext.ItemTarefa.Count(i => i.TarefaId == tarefaId);
+
+        // Asserção
+        Assert.IsTrue(conseguiuExcluir);
+        Assert.IsNull(tarefaSelecionada);
+        Assert.AreEqual(0, quantidadeItensTarefa);
+
+
+    }
+
 }
