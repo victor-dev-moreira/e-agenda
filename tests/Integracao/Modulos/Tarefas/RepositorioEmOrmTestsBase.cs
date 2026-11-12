@@ -4,7 +4,7 @@ using eAgenda.Testes.Integracao.Compartilhado;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
-namespace eAgenda.Testes.Integracao.Tarefas;
+namespace eAgenda.Testes.Integracao.Modulos.Tarefas;
 
 [TestClass]
 public abstract class RepositorioEmOrmTestsBase

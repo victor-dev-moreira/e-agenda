@@ -60,4 +60,14 @@ public class Contato : EntidadeBase<Contato>
         Empresa = entidadeAtualizada.Empresa;
     }
 
+    public override bool Equals(object? obj)
+    {
+        return obj is Contato contato &&
+            Nome == contato.Nome &&
+            Email == contato.Email &&
+            Telefone == contato.Telefone &&
+            Cargo == contato.Cargo &&
+            Empresa == contato.Empresa;
+    }
+
 }
