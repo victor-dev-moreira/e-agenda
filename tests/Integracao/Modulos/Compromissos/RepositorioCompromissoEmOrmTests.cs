@@ -111,4 +111,16 @@ public sealed class RepositorioCompromissoEmOrmTests : RepositorioEmOrmTestsBase
         Assert.AreEqual(contato, compromissoSelecionado.Contato);
 
     }
+
+    [TestMethod]
+    public void Editar_DevePersistir_Compromisso_ComContatoNoBanco()
+    {
+
+    }
+
+    [TestMethod]
+    public void Excluir_DeveApagar_CompromissoNoBanco()
+    {
+
+    }
 }

@@ -28,6 +28,23 @@ public sealed class EAgendaDbContext(
     public DbSet<Contato> Contatos => Set<Contato>();
     public DbSet<Compromisso> Compromissos => Set<Compromisso>();
 
+    public override int SaveChanges()
+    {
+        Guid usuarioId = usuarioAtual.Id;
+
+        foreach (var entrada in ChangeTracker.Entries()
+                     .Where(e => e.State == EntityState.Added &&
+                                 e.Metadata.FindProperty(nameof(EntidadeBase<object>.UsuarioId)) is not null))
+        {
+            var propriedadeUsuarioId = entrada.Property(nameof(EntidadeBase<object>.UsuarioId));
+
+            if ((Guid)propriedadeUsuarioId.CurrentValue! == Guid.Empty)
+                propriedadeUsuarioId.CurrentValue = usuarioId;
+        }
+
+        return base.SaveChanges();
+    }
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         base.OnModelCreating(modelBuilder);
