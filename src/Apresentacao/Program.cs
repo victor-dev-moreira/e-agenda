@@ -3,6 +3,7 @@ using eAgenda.Dominio.Compartilhado;
 using eAgenda.Infraestrutura.Compartilhado;
 using eAgenda.Infraestrutura.Compartilhado.Identity;
 using eAgenda.Infraestrutura.Compartilhado.Orm;
+using eAgenda.WebApp.Compartilhado.Extensions;
 using eAgenda.WebApp.Modulos.Autenticacao;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
@@ -58,7 +59,7 @@ builder.Services.AddScoped<IProvedorUsuarioAtual, ProvedorUsuarioAtualHttp>();
 
 var app = builder.Build();
 
-if (app.Environment.IsDevelopment())
+if (app.Environment.IsDevelopment() || app.Environment.IsTesting())
 {
     using var scope = app.Services.CreateScope();
 
